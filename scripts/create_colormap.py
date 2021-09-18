@@ -273,6 +273,13 @@ def lut():
                      [0, 0, 0],
                      [0, 0, 0],
                      [0, 0, 0]]])
+    
+    useful = [[255, 255, 255],[255, 0, 0],[0, 255, 0],[0, 0, 255]]
+    unused = [[0, 0, 0]] * 252
+    useful.extend(unused)
+    lut1 = np.array([useful])
+
+    print lut1
     return lut1
 
     # identity = np.arange(256, dtype = np.dtype('uint8'))
@@ -282,6 +289,6 @@ def lut():
 if __name__ == '__main__':
 
     im_color = lut()
-    cv2.imwrite('ENet/scripts/cityscapes19.png', im_color)
+    cv2.imwrite('scripts/cityscapes19.png', im_color)
     # cv2.imshow("Colormap", im_color)
     cv2.waitKey(0)

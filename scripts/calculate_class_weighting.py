@@ -50,6 +50,7 @@ if __name__ == '__main__':
                 else:
                     classes[i] += (labels == i).sum()  # sum up all pixels that belongs to a certain class
                     present_in_data[i] += 1  # how often the class is present in the dataset
+        print present_in_data
 
         for l in xrange(args.num_classes):
             if present_in_data[l] == 0:

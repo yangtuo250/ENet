@@ -11,7 +11,7 @@ and also the mode in which it should operate (--mode). The following modes are a
 """
 import argparse
 import os
-caffe_root = 'ENet/caffe-enet/'  # Change this to the absolute directory to SegNet Caffe
+caffe_root = 'caffe-enet/'  # Change this to the absolute directory to SegNet Caffe
 import sys
 sys.path.insert(0, caffe_root + 'python')
 import caffe
@@ -45,11 +45,10 @@ def initial_block(n):
                               weight_filler=dict(type='msra'))
     n.pool0_1 = L.Pooling(n.data, kernel_size=2, stride=2, pool=P.Pooling.MAX)
     n.concat0_1 = L.Concat(n.conv0_1, n.pool0_1, axis=1)
-    n.bn0_1 = L.BN(n.concat0_1, scale_filler=dict(type='constant', value=1), bn_mode=bn_mode,
-                   shift_filler=dict(type='constant', value=0.001), param=[dict(lr_mult=1, decay_mult=1),
-                                                                           dict(lr_mult=1, decay_mult=0)])
+    n.batchnorm0_1 = L.BatchNorm(n.concat0_1, batch_norm_param=dict(use_global_stats=True))
+    n.scale0_1 = L.Scale(n.batchnorm0_1, param=dict(lr_mult=1))
 
-    n.prelu0_1 = L.PReLU(n.bn0_1)
+    n.prelu0_1 = L.PReLU(n.scale0_1)
     last_layer = 'prelu0_1'
     return n.to_proto(), last_layer
 
@@ -112,11 +111,15 @@ def bottleneck(n, prev_layer, stage, num_bottle, num_output, type, param_add=Non
         conv_name = 'deconv{}_{}_{}'.format(stage, num_bottle, module+1)
         setattr(n, conv_name, L.Deconvolution(prev_layer, convolution_param=dict(num_output=num_output/scale_factor,
                                                                                  bias_term=1, kernel_size=2, stride=2)))
+        setattr(n, conv_name+'_batchnorm', L.BatchNorm(getattr(n, conv_name), batch_norm_param=dict(use_global_stats=True)))
+        bn_name = conv_name+'_scale'
+        setattr(n, bn_name, L.Scale(getattr(n, conv_name+'_batchnorm'), param=dict(lr_mult=1)))
     else:
         setattr(n, conv_name, L.Convolution(prev_layer, num_output=num_output/scale_factor, bias_term=1,
                                             kernel_size=3, stride=1, pad=1, weight_filler=dict(type='msra')))
 
-    setattr(n, bn_name, L.BN(getattr(n, conv_name), scale_filler=dict(type='constant', value=1), bn_mode=bn_mode,
+    if not type == 'upsampling':
+        setattr(n, bn_name, L.BN(getattr(n, conv_name), scale_filler=dict(type='constant', value=1), bn_mode=bn_mode,
                              shift_filler=dict(type='constant', value=0.001), param=[dict(lr_mult=1, decay_mult=1),
                                                                                      dict(lr_mult=1, decay_mult=0)]))
     if param_add == 'relu':

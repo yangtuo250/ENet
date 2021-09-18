@@ -9,10 +9,10 @@ from argparse import ArgumentParser
 from os.path import join
 import argparse
 import sys
-caffe_root = 'ENet/caffe-enet/'  # Change this to the absolute directory to ENet Caffe
+caffe_root = 'caffe-enet/'  # Change this to the absolute directory to ENet Caffe
 sys.path.insert(0, caffe_root + 'python')
 import caffe
-sys.path.append('/usr/local/lib/python2.7/site-packages')
+# sys.path.append('/home/liuyk/miniconda3/envs/caffepy2/lib/python2.7/site-packages')
 import cv2
 
 
@@ -66,9 +66,12 @@ if __name__ == '__main__':
     prediction_rgb = np.zeros(prediction.shape, dtype=np.uint8)
     label_colours_bgr = label_colours[..., ::-1]
     cv2.LUT(prediction, label_colours_bgr, prediction_rgb)
+    input_image = cv2.imread(args.input_image, 1)
+    input_image = cv2.resize(input_image, (input_shape[3], input_shape[2]))
+    prediction_rgb = np.where((prediction_rgb==[255, 255, 255]).all(axis=-1)[..., None], input_image, prediction_rgb)
 
-    cv2.imshow("ENet", prediction_rgb)
-    key = cv2.waitKey(0)
+    # cv2.imshow("ENet", prediction_rgb)
+    # key = cv2.waitKey(0)
 
     if args.out_dir is not None:
         input_path_ext = args.input_image.split(".")[-1]
