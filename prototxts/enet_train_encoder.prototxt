@@ -5,10 +5,10 @@ layer {
   top: "data"
   top: "label"
   dense_image_data_param {
-    source: "/data/250backup/data/liuyk/dataset-A/train/train.lst"
-    batch_size: 4
+    source: "dataset/wood_defect2/imglist.txt"
+    batch_size: 2
     shuffle: true
-    new_height: 512
+    new_height: 1024
     new_width: 1024
     label_divide_factor: 8
   }
@@ -3716,7 +3716,7 @@ layer {
   bottom: "prelu3_8_4"
   top: "deconv_encoder6_0_0"
   convolution_param {
-    num_output: 4
+    num_output: 3
     bias_term: true
     kernel_size: 1
     stride: 1
@@ -3731,10 +3731,9 @@ layer {
   loss_param {
     ignore_label: 255
     weight_by_label_freqs: true
-    class_weighting: 0.1256
-    class_weighting: 459.7967
-    class_weighting: 34.2382
-    class_weighting: 135.3729
+    class_weighting: 0.1675
+    class_weighting: 40.4762
+    class_weighting: 157.8617
   }
 }
 layer {

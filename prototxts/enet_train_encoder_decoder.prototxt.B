@@ -5,10 +5,10 @@ layer {
   top: "data"
   top: "label"
   dense_image_data_param {
-    source: "/data/250backup/data/liuyk/dataset-A/train/train.lst"
-    batch_size: 2
+    source: "dataset/wood_defect2/imglist.txt"
+    batch_size: 1
     shuffle: true
-    new_height: 512
+    new_height: 1024
     new_width: 1024
     label_divide_factor: 1
   }
@@ -51,34 +51,27 @@ layer {
   }
 }
 layer {
-  name: "bn0_1"
-  type: "BN"
+  name: "batchnorm0_1"
+  type: "BatchNorm"
   bottom: "concat0_1"
-  top: "bn0_1"
+  top: "batchnorm0_1"
+  batch_norm_param {
+    use_global_stats: true
+  }
+}
+layer {
+  name: "scale0_1"
+  type: "Scale"
+  bottom: "batchnorm0_1"
+  top: "scale0_1"
   param {
     lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 1.0
-    decay_mult: 0.0
-  }
-  bn_param {
-    scale_filler {
-      type: "constant"
-      value: 1.0
-    }
-    shift_filler {
-      type: "constant"
-      value: 0.0010000000475
-    }
-    bn_mode: LEARN
   }
 }
 layer {
   name: "prelu0_1"
   type: "PReLU"
-  bottom: "bn0_1"
+  bottom: "scale0_1"
   top: "prelu0_1"
 }
 layer {
@@ -3778,34 +3771,27 @@ layer {
   }
 }
 layer {
-  name: "bn4_0_1"
-  type: "BN"
+  name: "deconv4_0_1_batchnorm"
+  type: "BatchNorm"
   bottom: "deconv4_0_1"
-  top: "bn4_0_1"
+  top: "deconv4_0_1_batchnorm"
+  batch_norm_param {
+    use_global_stats: true
+  }
+}
+layer {
+  name: "deconv4_0_1_scale"
+  type: "Scale"
+  bottom: "deconv4_0_1_batchnorm"
+  top: "deconv4_0_1_scale"
   param {
     lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 1.0
-    decay_mult: 0.0
-  }
-  bn_param {
-    scale_filler {
-      type: "constant"
-      value: 1.0
-    }
-    shift_filler {
-      type: "constant"
-      value: 0.0010000000475
-    }
-    bn_mode: LEARN
   }
 }
 layer {
   name: "prelu4_0_1"
   type: "ReLU"
-  bottom: "bn4_0_1"
+  bottom: "deconv4_0_1_scale"
   top: "prelu4_0_1"
 }
 layer {
@@ -4295,34 +4281,27 @@ layer {
   }
 }
 layer {
-  name: "bn5_0_1"
-  type: "BN"
+  name: "deconv5_0_1_batchnorm"
+  type: "BatchNorm"
   bottom: "deconv5_0_1"
-  top: "bn5_0_1"
+  top: "deconv5_0_1_batchnorm"
+  batch_norm_param {
+    use_global_stats: true
+  }
+}
+layer {
+  name: "deconv5_0_1_scale"
+  type: "Scale"
+  bottom: "deconv5_0_1_batchnorm"
+  top: "deconv5_0_1_scale"
   param {
     lr_mult: 1.0
-    decay_mult: 1.0
-  }
-  param {
-    lr_mult: 1.0
-    decay_mult: 0.0
-  }
-  bn_param {
-    scale_filler {
-      type: "constant"
-      value: 1.0
-    }
-    shift_filler {
-      type: "constant"
-      value: 0.0010000000475
-    }
-    bn_mode: LEARN
   }
 }
 layer {
   name: "prelu5_0_1"
   type: "ReLU"
-  bottom: "bn5_0_1"
+  bottom: "deconv5_0_1_scale"
   top: "prelu5_0_1"
 }
 layer {
@@ -4602,7 +4581,7 @@ layer {
   bottom: "prelu5_1_4"
   top: "deconv6_0_0"
   convolution_param {
-    num_output: 4
+    num_output: 3
     bias_term: true
     kernel_size: 2
     stride: 2
@@ -4617,10 +4596,9 @@ layer {
   loss_param {
     ignore_label: 255
     weight_by_label_freqs: true
-    class_weighting: 0.1256
-    class_weighting: 459.7967
-    class_weighting: 34.2382
-    class_weighting: 135.3729
+    class_weighting: 0.1675
+    class_weighting: 40.4762
+    class_weighting: 157.8617
   }
 }
 layer {

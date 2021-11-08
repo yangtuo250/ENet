@@ -7,7 +7,7 @@ layer {
     shape {
       dim: 1
       dim: 3
-      dim: 512
+      dim: 1024
       dim: 1024
     }
   }
@@ -4580,7 +4580,7 @@ layer {
   bottom: "prelu5_1_4"
   top: "deconv6_0_0"
   convolution_param {
-    num_output: 4
+    num_output: 3
     bias_term: true
     kernel_size: 2
     stride: 2

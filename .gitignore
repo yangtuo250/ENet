@@ -1,1 +1,6 @@
-backup/*
+backup/
+build/
+dataset/
+weights/
+final_model_weights/
+*.log
